@@ -134,6 +134,17 @@ export class DocumentCreator {
    * @returns {Array} Array of document elements
    */
   createDocumentContent({ common, sections, jobLevel, formData, formattedDateRevised }) {
+    // Separate Tools sections from other sections
+    const toolsSections = sections.filter(
+      (s) =>
+        s.heading.toUpperCase().includes("TOOLS") || s.heading.toUpperCase().includes("EQUIPMENT")
+    );
+
+    const jobLevelSections = sections.filter(
+      (s) =>
+        !s.heading.toUpperCase().includes("TOOLS") && !s.heading.toUpperCase().includes("EQUIPMENT")
+    );
+
     return [
       // Header
       this.createLogo(),
@@ -155,8 +166,11 @@ export class DocumentCreator {
       ...common.items.map((item) => this.createBullet(item)),
       this.newLine(),
 
-      // Dynamic Sections
-      ...this.createDynamicSections(sections),
+      // Job-level specific sections
+      ...this.createDynamicSections(jobLevelSections),
+
+      // Tools sections (if any)
+      ...this.createDynamicSections(toolsSections),
 
       // Footer Content
       new Paragraph({

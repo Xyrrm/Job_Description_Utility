@@ -11,6 +11,11 @@ export const UI_CONSTANTS = {
   DEV_SERVER_PORT: 3000,
   FORM_LABEL_SPAN: 5,
   FORM_WRAPPER_SPAN: 17,
+  GLOBAL_WORKSHEET_NAME: "Common",
+  TOOLS_TABLE_NAME: "TableTools",
+  REQUIREMENTS_TABLE_NAME: "TableRequirements",
+  TOOLS_SECTION_HEADING: "TOOLS & EQUIPMENT",
+  REQUIREMENTS_SECTION_HEADING: "REQUIREMENTS FOR ALL EMPLOYEES",
 };
 
 // Colors
@@ -107,6 +112,7 @@ export const MESSAGES = {
   SUCCESS_DOCUMENT_GENERATED: "Document generated successfully!",
   ERROR_FETCH_WORKSHEETS: "Failed to fetch worksheets",
   ERROR_FETCH_DATA: "Failed to fetch worksheet data",
+  ERROR_FETCH_GLOBAL: "Failed to fetch Global data",
   ERROR_DOCUMENT_GENERATION: "Failed to generate document",
   WELCOME_MESSAGE:
     "Fill out the job description details then select a job level tab to view it's corresponding checklist.",

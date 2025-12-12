@@ -35,9 +35,10 @@ export const useDocumentGeneration = () => {
    * @param {Object} formData - Form data
    * @param {Array} selectedData - Selected requirements data
    * @param {string} jobLevel - Current job level
+   * @param {Array} universalRequirements - Universal requirements from Global worksheet
    */
   const generateDocument = useCallback(
-    async (formData, selectedData, jobLevel) => {
+    async (formData, selectedData, jobLevel, universalRequirements = []) => {
       // Validate form data
       const validation = validateFormData(formData);
       if (!validation.isValid) {
@@ -55,9 +56,14 @@ export const useDocumentGeneration = () => {
 
       const success = await withErrorHandling(
         async () => {
+          // Use provided universal requirements or fall back to hardcoded
+          const requirementsToUse = universalRequirements.length > 0
+            ? { heading: "REQUIREMENTS FOR ALL EMPLOYEES", items: universalRequirements }
+            : common; // fallback to hardcoded
+
           const documentCreator = new DocumentCreator();
           const doc = documentCreator.create({
-            common,
+            common: requirementsToUse,
             sections: selectedData,
             jobLevel,
             formData,

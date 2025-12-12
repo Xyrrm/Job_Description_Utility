@@ -6,6 +6,8 @@
 
 /* global Excel, console */
 
+import { UI_CONSTANTS } from "../utils/constants";
+
 /**
  * Returns the names of all the worksheets in the workbook
  * @returns {Promise<Array>} Promise resolving to worksheet names array
@@ -92,6 +94,73 @@ export async function validateWorksheet(sheetName) {
   } catch (error) {
     console.log(`Worksheet ${sheetName} does not exist:`, error.message);
     return false;
+  }
+}
+
+/**
+ * Fetches specific table data from a worksheet (single-column tables)
+ * @param {string} sheetName - Worksheet name
+ * @param {string} tableName - Table name
+ * @returns {Promise<Array>} Array of items from the table
+ */
+async function getTableData(sheetName, tableName) {
+  return await Excel.run(async (context) => {
+    const sheet = context.workbook.worksheets.getItem(sheetName);
+    const table = sheet.tables.getItem(tableName);
+    table.load("columns");
+    await context.sync();
+
+    const columns = table.columns;
+    columns.load("items");
+    await context.sync();
+
+    // Assuming single-column table, get first column
+    if (columns.items.length === 0) return [];
+
+    const firstColumn = columns.items[0];
+    const values = firstColumn.values
+      .slice(1) // Remove header
+      .filter(value => value[0] !== null && value[0] !== "") // Remove empty rows
+      .map(value => value[0]); // Extract string values
+
+    return values;
+  });
+}
+
+/**
+ * Fetches Global worksheet data (Tools and Universal Requirements)
+ * @returns {Promise<Object>} Object with tools and requirements arrays
+ */
+export async function getGlobalData() {
+  const exists = await validateWorksheet(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME);
+
+  if (!exists) {
+    console.log("Global worksheet not found - using defaults");
+    return { tools: [], requirements: [] };
+  }
+
+  try {
+    // Fetch both tables in parallel
+    const [toolsData, requirementsData] = await Promise.all([
+      getTableData(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME, UI_CONSTANTS.TOOLS_TABLE_NAME)
+        .catch(err => {
+          console.log("TableTools not found in Global worksheet:", err.message);
+          return [];
+        }),
+      getTableData(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME, UI_CONSTANTS.REQUIREMENTS_TABLE_NAME)
+        .catch(err => {
+          console.log("TableRequirements not found in Global worksheet:", err.message);
+          return [];
+        })
+    ]);
+
+    return {
+      tools: toolsData,
+      requirements: requirementsData
+    };
+  } catch (error) {
+    console.error("Error fetching Global data:", error);
+    return { tools: [], requirements: [] };
   }
 }
 

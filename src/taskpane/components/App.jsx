@@ -16,7 +16,7 @@ import { lightTheme, darkTheme, getFluentStyles } from "../styles/theme";
 import { useWorksheetData } from "../hooks/useWorksheetData";
 import { useDocumentGeneration } from "../hooks/useDocumentGeneration";
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
-import { MESSAGES, THEME_COLORS } from "../utils/constants";
+import { MESSAGES, THEME_COLORS, COLORS } from "../utils/constants";
 
 const AppContent = React.memo((props) => {
   const { isDarkMode } = useTheme();
@@ -36,6 +36,11 @@ const AppContent = React.memo((props) => {
     updateSelectedData,
     getFormattedSelectedData,
     clearSelectedData,
+    toolsData,
+    universalRequirements,
+    selectedToolsData,
+    globalLoading,
+    updateToolsSelection,
   } = useWorksheetData();
 
   const { isGenerating, generateDocument } = useDocumentGeneration();
@@ -71,9 +76,26 @@ const AppContent = React.memo((props) => {
   );
 
   const handleDocumentGeneration = React.useCallback(async () => {
-    const selectedData = getFormattedSelectedData();
-    await generateDocument(formData, selectedData, activeSheet);
-  }, [generateDocument, formData, getFormattedSelectedData, activeSheet]);
+    const jobLevelData = getFormattedSelectedData();
+
+    // Filter out any "Tools" sections from job-level data (edge case protection)
+    const filteredJobLevelData = jobLevelData.filter(
+      section => !section.heading.toUpperCase().includes("TOOLS") &&
+                 !section.heading.toUpperCase().includes("EQUIPMENT")
+    );
+
+    // Format Tools data from Global worksheet
+    const toolsFormattedData = Object.entries(selectedToolsData).map(([heading, items]) => ({
+      heading,
+      items,
+    }));
+
+    // Merge filtered job level and Tools data
+    const allSelectedData = [...filteredJobLevelData, ...toolsFormattedData];
+
+    // Pass universal requirements separately
+    await generateDocument(formData, allSelectedData, activeSheet, universalRequirements);
+  }, [generateDocument, formData, getFormattedSelectedData, activeSheet, selectedToolsData, universalRequirements]);
 
   const handleFormChange = React.useCallback((changedValues, allValues) => {
     setFormData(allValues);
@@ -188,6 +210,74 @@ const AppContent = React.memo((props) => {
                 </div>
               ))
             )}
+
+            {/* Global Data Section - Tools (same styling as other sections) */}
+            {!globalLoading && toolsData.length > 0 && (
+              <div style={{ marginTop: '20px' }}>
+                <TableComponent
+                  tableData={{
+                    headers: ["Tools & Equipment"],
+                    rows: toolsData.map((tool, index) => ({
+                      key: `tool-${index}`,
+                      "Tools & Equipment": tool
+                    }))
+                  }}
+                  activeSheet="Global"
+                  onSelectionChange={updateToolsSelection}
+                  clearTrigger={clearTrigger}
+                  isFirstSection={false}
+                />
+              </div>
+            )}
+
+            {/* Universal Requirements Section - Read-only display */}
+            {/* {universalRequirements.length > 0 && (
+              <div
+                style={{
+                  marginTop: '30px',
+                  paddingTop: '20px',
+                  borderTop: `2px solid ${COLORS.PRIMARY}`,
+                }}
+              >
+                <h3 style={{
+                  marginBottom: '16px',
+                  color: COLORS.PRIMARY,
+                  fontWeight: 600,
+                }}>
+                  Requirements for All Employees
+                </h3>
+                <div style={{
+                  backgroundColor: isDarkMode ? '#2a2a2a' : '#f9f9f9',
+                  padding: '16px',
+                  borderRadius: '4px',
+                  border: `1px solid ${isDarkMode ? '#444' : '#e0e0e0'}`,
+                }}>
+                  <ul style={{
+                    margin: 0,
+                    paddingLeft: '20px',
+                    listStyleType: 'disc',
+                  }}>
+                    {universalRequirements.map((req, index) => (
+                      <li key={`req-${index}`} style={{
+                        marginBottom: '8px',
+                        color: isDarkMode ? '#ccc' : '#333',
+                      }}>
+                        {req}
+                      </li>
+                    ))}
+                  </ul>
+                  <p style={{
+                    marginTop: '12px',
+                    marginBottom: 0,
+                    fontSize: '12px',
+                    fontStyle: 'italic',
+                    color: isDarkMode ? '#999' : '#666',
+                  }}>
+                    These requirements are automatically included in all job descriptions.
+                  </p>
+                </div>
+              </div>
+            )} */}
           </>
         ) : (
           <div style={fluentStyles.noDataMessage}>

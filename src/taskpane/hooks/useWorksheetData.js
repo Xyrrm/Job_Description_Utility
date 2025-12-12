@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { getWorksheets, getWorksheetData } from "../services/excelService";
+import { getWorksheets, getWorksheetData, getGlobalData } from "../services/excelService";
 import { withErrorHandling } from "../utils/errorHandler";
 import { UI_CONSTANTS, MESSAGES } from "../utils/constants";
 
@@ -21,6 +21,9 @@ export const useWorksheetData = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sheetDataCache, setSheetDataCache] = useState({});
   const [loadingStates, setLoadingStates] = useState({});
+  const [globalData, setGlobalData] = useState({ tools: [], requirements: [] });
+  const [selectedToolsData, setSelectedToolsData] = useState({});
+  const [globalLoading, setGlobalLoading] = useState(false);
 
   // Memoize filtered worksheets to prevent unnecessary recalculations
   const jobLevelSheets = useMemo(
@@ -53,6 +56,21 @@ export const useWorksheetData = () => {
     }
 
     setIsLoading(false);
+  }, []);
+
+  /**
+   * Fetch Global data (Tools and Universal Requirements)
+   */
+  const fetchGlobalData = useCallback(async () => {
+    setGlobalLoading(true);
+    const data = await withErrorHandling(
+      () => getGlobalData(),
+      { tools: [], requirements: [] },
+      "fetchGlobalData",
+      MESSAGES.ERROR_FETCH_GLOBAL
+    );
+    setGlobalData(data);
+    setGlobalLoading(false);
   }, []);
 
   /**
@@ -120,6 +138,18 @@ export const useWorksheetData = () => {
   );
 
   /**
+   * Update selected Tools data
+   * @param {string} tableIdentifier - Table/column identifier
+   * @param {Array} selectedRows - Array of selected row data
+   */
+  const updateToolsSelection = useCallback((tableIdentifier, selectedRows) => {
+    setSelectedToolsData((prev) => ({
+      ...prev,
+      [tableIdentifier]: selectedRows,
+    }));
+  }, []);
+
+  /**
    * Get selected data formatted for document generation
    * @returns {Array} Formatted selected data
    */
@@ -140,12 +170,15 @@ export const useWorksheetData = () => {
       ...prev,
       [activeSheet]: {},
     }));
+    // Also clear Tools selections
+    setSelectedToolsData({});
   }, [activeSheet]);
 
   // Initialize data on component mount
   useEffect(() => {
     fetchWorksheets();
-  }, [fetchWorksheets]);
+    fetchGlobalData(); // Fetch Global data in parallel
+  }, [fetchWorksheets, fetchGlobalData]);
 
   // Check if current sheet is loading
   const isCurrentSheetLoading = loadingStates[activeSheet] || false;
@@ -159,6 +192,10 @@ export const useWorksheetData = () => {
     isLoading,
     isCurrentSheetLoading,
     loadingStates,
+    toolsData: globalData.tools,
+    universalRequirements: globalData.requirements,
+    selectedToolsData,
+    globalLoading,
 
     // Actions
     handleSheetChange,
@@ -166,5 +203,6 @@ export const useWorksheetData = () => {
     getFormattedSelectedData,
     clearSelectedData,
     refetchWorksheets: fetchWorksheets,
+    updateToolsSelection,
   };
 };
