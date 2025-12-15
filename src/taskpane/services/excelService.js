@@ -120,8 +120,8 @@ async function getTableData(sheetName, tableName) {
     const firstColumn = columns.items[0];
     const values = firstColumn.values
       .slice(1) // Remove header
-      .filter(value => value[0] !== null && value[0] !== "") // Remove empty rows
-      .map(value => value[0]); // Extract string values
+      .filter((value) => value[0] !== null && value[0] !== "") // Remove empty rows
+      .map((value) => value[0]); // Extract string values
 
     return values;
   });
@@ -142,21 +142,23 @@ export async function getGlobalData() {
   try {
     // Fetch both tables in parallel
     const [toolsData, requirementsData] = await Promise.all([
-      getTableData(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME, UI_CONSTANTS.TOOLS_TABLE_NAME)
-        .catch(err => {
+      getTableData(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME, UI_CONSTANTS.TOOLS_TABLE_NAME).catch(
+        (err) => {
           console.log("TableTools not found in Global worksheet:", err.message);
           return [];
-        }),
-      getTableData(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME, UI_CONSTANTS.REQUIREMENTS_TABLE_NAME)
-        .catch(err => {
+        }
+      ),
+      getTableData(UI_CONSTANTS.GLOBAL_WORKSHEET_NAME, UI_CONSTANTS.REQUIREMENTS_TABLE_NAME).catch(
+        (err) => {
           console.log("TableRequirements not found in Global worksheet:", err.message);
           return [];
-        })
+        }
+      ),
     ]);
 
     return {
       tools: toolsData,
-      requirements: requirementsData
+      requirements: requirementsData,
     };
   } catch (error) {
     console.error("Error fetching Global data:", error);

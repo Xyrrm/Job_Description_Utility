@@ -6,8 +6,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Job Description Utility"/>
   <Description DefaultValue="Taskpane form to streamline job description creation and updates, and keep them consistent."/>
-  <IconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
-  <HighResolutionIconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
+  <IconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-128.png"/>
+  <HighResolutionIconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-filled.png"/>
   <SupportUrl DefaultValue="mailto:uvargas@gailborden.info"/>
   <AppDomains>
     <AppDomain>https://gailborden.sharepoint.com</AppDomain>
@@ -62,9 +62,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812"/>

@@ -57,9 +57,10 @@ export const useDocumentGeneration = () => {
       const success = await withErrorHandling(
         async () => {
           // Use provided universal requirements or fall back to hardcoded
-          const requirementsToUse = universalRequirements.length > 0
-            ? { heading: "REQUIREMENTS FOR ALL EMPLOYEES", items: universalRequirements }
-            : common; // fallback to hardcoded
+          const requirementsToUse =
+            universalRequirements.length > 0
+              ? { heading: "REQUIREMENTS FOR ALL EMPLOYEES", items: universalRequirements }
+              : common; // fallback to hardcoded
 
           const documentCreator = new DocumentCreator();
           const doc = documentCreator.create({
