@@ -6,8 +6,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Job Description Utility"/>
   <Description DefaultValue="Taskpane form to streamline job description creation and updates, and keep them consistent."/>
-  <IconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-128.png"/>
-  <HighResolutionIconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/logo-filled.png"/>
+  <IconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
+  <HighResolutionIconUrl DefaultValue="https://jdutility.z19.web.core.windows.net/assets/gbpl-logo.png"/>
   <SupportUrl DefaultValue="mailto:uvargas@gailborden.info"/>
   <AppDomains>
     <AppDomain>https://gailborden.sharepoint.com</AppDomain>
